@@ -1,0 +1,40 @@
+source https://nuget.org/api/v2
+storage:none
+
+nuget ArangoDB.Client
+nuget FSharp.Core redirects: force
+nuget Fable.JsonConverter
+nuget FSharp.Data.GraphQL.Client
+nuget FSharp.Data.GraphQL.Server
+nuget Suave
+nuget Microsoft.Extensions.Logging.Console
+nuget System.Net.NetworkInformation
+nuget Newtonsoft.Json
+nuget jose-jwt
+
+nuget Fable.Core
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.Debugger
+nuget Fable.Elmish.React
+
+clitool dotnet-fable
+clitool Microsoft.DotNet.Watcher.Tools
+
+group ServerTests
+  source https://nuget.org/api/v2
+  storage:none
+  nuget FSharp.Core redirects: force
+  nuget Expecto
+
+group UITests
+  source https://nuget.org/api/v2
+  framework >= net45
+  nuget FSharp.Core redirects: force
+  nuget Canopy
+  nuget Expecto
+  nuget phantomjs
+
+group Build
+  source https://nuget.org/api/v2
+  framework >= net45
+  nuget FAKE

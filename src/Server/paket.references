@@ -1,0 +1,9 @@
+FSharp.Core
+Suave
+Microsoft.Extensions.Logging.Console
+System.Net.NetworkInformation
+Newtonsoft.Json
+Fable.JsonConverter
+jose-jwt
+FSharp.Data.GraphQL.Server
+ArangoDB.Client

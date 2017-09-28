@@ -1,0 +1,8 @@
+FSharp.Core
+Fable.Elmish.Browser
+Fable.Elmish.Debugger
+Fable.Elmish.React
+Fable.Core
+FSharp.Data.GraphQL.Client
+
+dotnet-fable
