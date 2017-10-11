@@ -6,4 +6,4 @@ Newtonsoft.Json
 Fable.JsonConverter
 jose-jwt
 FSharp.Data.GraphQL.Server
-ArangoDB.Client
+Nett

@@ -2,6 +2,7 @@ import { createElement, Component } from "react";
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
 import { equals, extendInfo } from "../fable-core/Util";
+import CurriedLambda from "../fable-core/CurriedLambda";
 export const Components = function (__exports) {
   const LazyView = __exports.LazyView = class LazyView extends Component {
     [_Symbol.reflection]() {
@@ -72,33 +73,39 @@ export const Common = function (__exports) {
   };
 
   const lazyView = __exports.lazyView = function (view) {
-    const equal = function (x, y) {
-      return equals(x, y);
-    };
+    return CurriedLambda((() => {
+      const equal = function (x, y) {
+        return equals(x, y);
+      };
 
-    return function (state) {
-      return lazyViewWith(equal, view, state);
-    };
+      return function (state) {
+        return lazyViewWith(equal, view, state);
+      };
+    })());
   };
 
   const lazyView2 = __exports.lazyView2 = function (view) {
-    const equal = function (x, y) {
-      return equals(x, y);
-    };
+    return CurriedLambda((() => {
+      const equal = function (x, y) {
+        return equals(x, y);
+      };
 
-    return function (state, dispatch) {
-      return lazyView2With(equal, view, state, dispatch);
-    };
+      return function (state, dispatch) {
+        return lazyView2With(equal, view, state, dispatch);
+      };
+    })());
   };
 
   const lazyView3 = __exports.lazyView3 = function (view) {
-    const equal = function (x, y) {
-      return equals(x, y);
-    };
+    return CurriedLambda((() => {
+      const equal = function (x, y) {
+        return equals(x, y);
+      };
 
-    return function (state1, state2, dispatch) {
-      return lazyView3With(equal, view, state1, state2, dispatch);
-    };
+      return function (state1, state2, dispatch) {
+        return lazyView3With(equal, view, state1, state2, dispatch);
+      };
+    })());
   };
 
   return __exports;

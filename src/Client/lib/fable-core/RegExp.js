@@ -67,6 +67,8 @@ export function replace(reg, input, replacement, limit, offset = 0) {
     limit = limit == null ? -1 : limit;
     return input.substring(0, offset) + input.substring(offset).replace(reg, replacer);
   } else {
+    // $0 doesn't work with JS regex, see #1155
+    replacement = replacement.replace(/\$0/g, s => "$&");
     if (limit != null) {
       let m;
       const sub1 = input.substring(offset);

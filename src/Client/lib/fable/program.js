@@ -1,8 +1,9 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
-import { some, Unit, makeGeneric, Tuple, GenericParam, Function as _Function } from "../fable-core/Util";
+import { Unit, makeGeneric, Tuple, GenericParam, Function as _Function } from "../fable-core/Util";
 import { append, ofArray } from "../fable-core/List";
 import List from "../fable-core/List";
+import { partialApply } from "../fable-core/CurriedLambda";
 import CurriedLambda from "../fable-core/CurriedLambda";
 import { Cmd } from "./cmd";
 import { toJson } from "../fable-core/Serialize";
@@ -44,14 +45,14 @@ export class Program {
 setType("Elmish.Program", Program);
 export const ProgramModule = function (__exports) {
   const onError = __exports.onError = function (text, ex) {
-    console.error(some(text), ex);
+    console.error(text, ex);
   };
 
   const mkProgram = __exports.mkProgram = function (init, update, view) {
     const setState = CurriedLambda(function (model) {
-      return $var2 => function (value) {
+      return $var1 => function (value) {
         value;
-      }(($var1 => view(model, $var1))($var2));
+      }(partialApply(view, [model])($var1));
     });
     return new Program(init, update, function (_arg1) {
       return Cmd.none();
@@ -61,21 +62,21 @@ export const ProgramModule = function (__exports) {
   };
 
   const mkSimple = __exports.mkSimple = function (init, update, view) {
-    const init_1 = $var3 => {
+    const init_1 = $var2 => {
       return function (state) {
         return [state, Cmd.none()];
-      }(init($var3));
+      }(init($var2));
     };
 
     const update_1 = CurriedLambda(function (msg) {
-      return $var5 => function (state_1) {
+      return $var3 => function (state_1) {
         return [state_1, Cmd.none()];
-      }(($var4 => update(msg, $var4))($var5));
+      }(partialApply(update, [msg])($var3));
     });
     const setState = CurriedLambda(function (model) {
-      return $var7 => function (value) {
+      return $var4 => function (value) {
         value;
-      }(($var6 => view(model, $var6))($var7));
+      }(partialApply(view, [model])($var4));
     });
     return new Program(init_1, update_1, function (_arg1) {
       return Cmd.none();
@@ -95,7 +96,7 @@ export const ProgramModule = function (__exports) {
   const withConsoleTrace = __exports.withConsoleTrace = function (program) {
     const traceInit = function (arg) {
       const patternInput = program.init(arg);
-      console.log(some("Initial state:"), function (o) {
+      console.log("Initial state:", function (o) {
         return function (arg00) {
           return JSON.parse(arg00);
         }(toJson(o));
@@ -104,13 +105,13 @@ export const ProgramModule = function (__exports) {
     };
 
     const traceUpdate = function (msg, model) {
-      console.log(some("New message:"), function (o_1) {
+      console.log("New message:", function (o_1) {
         return function (arg00_1) {
           return JSON.parse(arg00_1);
         }(toJson(o_1));
       }(msg));
       const patternInput_1 = program.update(msg, model);
-      console.log(some("Updated state:"), function (o_2) {
+      console.log("Updated state:", function (o_2) {
         return function (arg00_2) {
           return JSON.parse(arg00_2);
         }(toJson(o_2));

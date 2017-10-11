@@ -3,12 +3,16 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
+  <!-- <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup> -->
   <ItemGroup>
     <Compile Include="Shared/Domain.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
+    <Compile Include="Config/Config.fs" />
     <Compile Include="WishList.fs" />
     <Compile Include="Api/Route.fs" />
     <Compile Include="WebServer.fs" />

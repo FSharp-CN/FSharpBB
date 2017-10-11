@@ -1,28 +1,25 @@
-import { hero2 as hero2_1 } from "./GraphqlTest";
-import { printf, toConsole } from "./fable-core/String";
 import { setType } from "./fable-core/Symbol";
 import _Symbol from "./fable-core/Symbol";
 import { view as view_1, update as update_1, init as init_2, Model as Model_1 } from "./pages/Login";
 import { view as view_2, update as update_2, init as init_1, Model as Model_2 } from "./pages/WishList";
-import { createObj, some, compareRecords, equalsRecords, compareUnions, equals } from "./fable-core/Util";
+import { createObj, compareRecords, equalsRecords, compareUnions, equals } from "./fable-core/Util";
 import { UserData, toHash, AppMsg, Page as Page_2 } from "./Messages";
 import { view as view_3, init as init_3, Model as Model_3 } from "./pages/Menu";
+import CurriedLambda from "./fable-core/CurriedLambda";
 import { ofArray } from "./fable-core/List";
 import List from "./fable-core/List";
 import { parseHash, oneOf, s, map } from "./fable/parser";
 import { Cmd } from "./fable/cmd";
 import { ProgramModule as ProgramModule_1, Navigation } from "./fable/navigation";
+import { printf, toConsole } from "./fable-core/String";
 import { delete as _delete, save } from "./Utils";
 import { createElement } from "react";
 import { Common } from "./fable/common";
 import { centerStyle, words, viewLink } from "./Style";
 import { Version } from "./ReleaseNotes";
+import { result as result_2 } from "./Validation";
 import { ProgramModule } from "./fable/program";
 import { withReact } from "./fable/react";
-export function hero2() {
-  return hero2_1();
-}
-toConsole(printf("%A"))(hero2);
 export class SubModel {
   constructor(tag, data) {
     this.tag = tag;
@@ -76,12 +73,12 @@ export class Model {
 
 }
 setType("Client.App.Model", Model);
-export const pageParser = (() => {
+export const pageParser = CurriedLambda((() => {
   const parsers = ofArray([map(new Page_2(0), s("home")), map(new Page_2(1), s("login")), map(new Page_2(2), s("wishlist"))]);
   return function (state) {
     return oneOf(parsers, state);
   };
-})();
+})());
 export function urlUpdate(result, model) {
   if (result != null) {
     if (result.tag === 2) {
@@ -110,7 +107,7 @@ export function urlUpdate(result, model) {
       }, patternInput_1[1])];
     }
   } else {
-    console.error(some("Error parsing url"));
+    console.error("Error parsing url");
     return [model, Navigation.modifyUrl(toHash(model.Page))];
   }
 }
@@ -124,7 +121,7 @@ export function update(msg, model) {
   const matchValue = [msg, model.SubModel];
 
   if (matchValue[0].tag === 2) {
-    toConsole(printf("Unable to access local storage: %A"))(matchValue[0].data);
+    toConsole(printf("Unable to access local storage: %A", 1))(matchValue[0].data);
     return [model, new List()];
   } else if (matchValue[0].tag === 4) {
     if (matchValue[1].tag === 1) {
@@ -135,7 +132,7 @@ export function update(msg, model) {
 
       if (patternInput[0].State.tag === 1) {
         const newUser = new UserData(patternInput[0].Login.UserName, patternInput[0].State.data);
-        const cmd_1 = equals(model.Menu.User, some(newUser)) ? cmd : Cmd.batch(ofArray([cmd, Cmd.ofFunc(function (data) {
+        const cmd_1 = equals(model.Menu.User, newUser) ? cmd : Cmd.batch(ofArray([cmd, Cmd.ofFunc(function (data) {
           save("user", data);
         }, newUser, function () {
           return new AppMsg(0);
@@ -144,7 +141,7 @@ export function update(msg, model) {
         })]));
         return [(() => {
           const SubModel_1 = new SubModel(1, patternInput[0]);
-          const Menu = new Model_3(some(newUser), model.Menu.query);
+          const Menu = new Model_3(newUser, model.Menu.query);
           return new Model(model.Page, Menu, SubModel_1);
         })(), cmd_1];
       } else {
@@ -172,7 +169,7 @@ export function update(msg, model) {
     }
   } else if (matchValue[0].tag === 0) {
     const nextPage = new Page_2(2);
-    const patternInput_2 = urlUpdate(some(nextPage), model);
+    const patternInput_2 = urlUpdate(nextPage, model);
     const matchValue_1 = patternInput_2[0].Menu.User;
 
     if (matchValue_1 == null) {
@@ -231,20 +228,23 @@ export function view(model, dispatch) {
     return view_3(model_1, dispatch_1);
   })(model.Menu, dispatch), createElement("hr", {}), createElement("div", createObj(ofArray([centerStyle("column")]), 1), ...viewPage(model, dispatch)));
 }
-ProgramModule.run(withReact("elmish-app", ProgramModule.withConsoleTrace((() => {
-  const parser = function (location) {
-    return parseHash(pageParser, location);
-  };
+toConsole(printf("Result:%A", 1))(result_2);
+export function main() {
+  ProgramModule.run(withReact("elmish-app", ProgramModule.withConsoleTrace((() => {
+    const parser = function (location) {
+      return parseHash(pageParser, location);
+    };
 
-  return function (program) {
-    return ProgramModule_1.toNavigable(parser, function (result, model) {
-      return urlUpdate(result, model);
-    }, program);
-  };
-})()(ProgramModule.mkProgram(function (result_1) {
-  return init(result_1);
-}, function (msg, model_1) {
-  return update(msg, model_1);
-}, function (model_2, dispatch) {
-  return view(model_2, dispatch);
-})))));
+    return function (program) {
+      return ProgramModule_1.toNavigable(parser, function (result, model) {
+        return urlUpdate(result, model);
+      }, program);
+    };
+  })()(ProgramModule.mkProgram(function (result_1) {
+    return init(result_1);
+  }, function (msg, model_1) {
+    return update(msg, model_1);
+  }, function (model_2, dispatch) {
+    return view(model_2, dispatch);
+  })))));
+}

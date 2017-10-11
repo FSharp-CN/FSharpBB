@@ -11,3 +11,6 @@ let save key (data: 'T) =
 
 let delete key =
     Browser.localStorage.removeItem(key)
+
+open FSharp.Reflection
+

@@ -13,12 +13,12 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 
-    
+
 type LoginState =
 | LoggedOut
 | LoggedIn of JWT
 
-type Model = { 
+type Model = {
     State : LoginState
     Login : Login
     ErrorMsg : string }
@@ -30,29 +30,29 @@ let authUser (login:Login,apiUrl) =
 
         let body = toJson login
 
-        let props = 
+        let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
-        
+
         try
 
             let! response = Fetch.fetch apiUrl props
 
             if not response.Ok then
                 return! failwithf "Error: %d" response.Status
-            else    
-                let! data = response.text() 
+            else
+                let! data = response.text()
                 return data
         with
         | _ -> return! failwithf "Could not authenticate user."
     }
 
-let authUserCmd login apiUrl = 
+let authUserCmd login apiUrl =
     Cmd.ofPromise authUser (login,apiUrl) GetTokenSuccess AuthError
 
-let init (user:UserData option) = 
+let init (user:UserData option) =
     match user with
     | None ->
         { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
@@ -63,7 +63,7 @@ let init (user:UserData option) =
           State = LoggedIn user.Token
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> = 
+let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
     match msg with
     | LoginMsg.GetTokenSuccess token ->
         { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, []
@@ -78,18 +78,18 @@ let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
 
 let [<Literal>] ENTER_KEY = 13.
 
-let view model (dispatch: AppMsg -> unit) = 
+let view model (dispatch: AppMsg -> unit) =
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
 
     let onEnter msg dispatch =
-        function 
+        function
         | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
-            ev.preventDefault() 
+            ev.preventDefault()
             dispatch msg
         | _ -> ()
         |> OnKeyDown
-        
+
     match model.State with
     | LoggedIn _ ->
         div [Id "greeting"] [
@@ -99,7 +99,7 @@ let view model (dispatch: AppMsg -> unit) =
     | LoggedOut ->
         div [ClassName "signInBox" ] [
           h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
-           
+
           div [ ClassName showErrorClass ] [
                   div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
            ]
@@ -108,7 +108,7 @@ let view model (dispatch: AppMsg -> unit) =
                 span [ClassName "input-group-addon" ] [
                   span [ClassName "glyphicon glyphicon-user"] []
                 ]
-                input [ 
+                input [
                     Id "username"
                     HTMLAttr.Type "text"
                     ClassName "form-control input-lg"
@@ -122,7 +122,7 @@ let view model (dispatch: AppMsg -> unit) =
                 span [ClassName "input-group-addon" ] [
                   span [ClassName "glyphicon glyphicon-asterisk"] []
                 ]
-                input [ 
+                input [
                         Id "password"
                         Key ("password_" + model.Login.PasswordId.ToString())
                         HTMLAttr.Type "password"
@@ -131,10 +131,9 @@ let view model (dispatch: AppMsg -> unit) =
                         DefaultValue model.Login.Password
                         OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
                         onEnter (LoginMsg ClickLogIn) dispatch  ]
-            ]    
-           
+            ]
+
           div [ ClassName "text-center" ] [
               button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (LoginMsg ClickLogIn)) ] [ str "Log In" ]
-          ]                   
-        ]    
- 
+          ]
+        ]

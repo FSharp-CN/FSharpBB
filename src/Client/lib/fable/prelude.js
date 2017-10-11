@@ -5,7 +5,7 @@ export function tuple(a, b) {
 
   switch ($var1[0]) {
     case 0:
-      return some([$var1[1], $var1[2]]);
+      return [$var1[1], $var1[2]];
 
     case 1:
       return null;

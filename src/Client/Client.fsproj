@@ -1,23 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-   <PropertyGroup>
-    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
-    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
-    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsWindows)' == 'true'">
-    <FscToolPath>C:\Program Files (x86)\Microsoft SDKs\F#\4.1\Framework\v4.0</FscToolPath>
-    <FscToolExe>fsc.exe</FscToolExe>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsOSX)' == 'true'">
+  <PropertyGroup>
     <FscToolPath>/Library/Frameworks/Mono.framework/Versions/Current/Commands</FscToolPath>
-    <FscToolExe>fsharpc</FscToolExe>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsLinux)' == 'true'">
-    <FscToolPath>/usr/bin</FscToolPath>
     <FscToolExe>fsharpc</FscToolExe>
   </PropertyGroup>
   <ItemGroup>
@@ -29,8 +15,21 @@
     <Compile Include="pages/Menu.fs" />
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/Login.fs" />
-    <Compile Include="GraphqlTest.fs" />
+    <Compile Include="Validation.fs" />
+    <!-- <Compile Include="GraphqlTest.fs" /> -->
     <Compile Include="App.fs" />
   </ItemGroup>
+  <!-- <ItemGroup>
+    <Reference Include="FSharp.Data.GraphQL.Client">
+      <HintPath>/Users/z/Projects/Fable/FSharp.Data.GraphQL/src/FSharp.Data.GraphQL.Client/bin/Release/FSharp.Data.GraphQL.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GraphQLClient">
+      <HintPath>../GraphQLClient/bin/Debug/netcoreapp2.0/GraphQLClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup> -->
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

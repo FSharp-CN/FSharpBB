@@ -1,0 +1,4 @@
+query aa {
+  aa: {
+    bb
+}

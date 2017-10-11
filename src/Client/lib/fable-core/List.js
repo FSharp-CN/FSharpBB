@@ -1,11 +1,12 @@
 import List from "./ListClass";
+import { ofArray } from "./ListClass";
 import { groupBy as mapGroupBy } from "./Map";
 import { map as seqMap } from "./Seq";
 import { fold as seqFold } from "./Seq";
 import { foldBack as seqFoldBack } from "./Seq";
 import { toList as seqToList } from "./Seq";
 export default List;
-export { ofArray } from "./ListClass";
+export { ofArray };
 export function append(xs, ys) {
   return seqFold((acc, x) => new List(x, acc), ys, reverse(xs));
 }
@@ -79,4 +80,21 @@ export function unzip3(xs) {
 }
 export function groupBy(f, xs) {
   return seqToList(seqMap(k => [k[0], seqToList(k[1])], mapGroupBy(f, xs)));
+}
+export function splitAt(index, xs) {
+  if (index < 0) {
+    throw new Error("The input must be non-negative.");
+  }
+  let i = 0;
+  let last = xs;
+  const first = new Array(index);
+  while (i < index) {
+    if (last.tail == null) {
+      throw new Error("The input sequence has an insufficient number of elements.");
+    }
+    first[i] = last.head;
+    last = last.tail;
+    i++;
+  }
+  return [ofArray(first), last];
 }

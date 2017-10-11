@@ -1,6 +1,6 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
-import { createObj, some, Interface, equals, Any } from "../fable-core/Util";
+import { createObj, Interface, equals, Any } from "../fable-core/Util";
 import { Promise as _Promise } from "./Promise";
 import { toJson, ofJson } from "../fable-core/Serialize";
 import { append, ofArray } from "../fable-core/List";
@@ -49,7 +49,7 @@ export const Fetch_types = function (__exports) {
 }({});
 
 function _fetch(url, init) {
-  return fetch(url, some(createObj(init, 1))).then(function (response) {
+  return fetch(url, createObj(init, 1)).then(function (response) {
     if (response.ok) {
       return response;
     } else {

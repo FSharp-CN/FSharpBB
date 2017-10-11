@@ -3,7 +3,6 @@ module ServerCode.Auth
 
 open Suave
 open Suave.RequestErrors
-open ArangoDB.Client
 
 /// Login web part that authenticates a user and returns a token in the HTTP body.
 let login (ctx: HttpContext) = async {

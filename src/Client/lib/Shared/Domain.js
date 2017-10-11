@@ -1,6 +1,6 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
-import { equals, some, makeGeneric, compareRecords, equalsRecords } from "../fable-core/Util";
+import { equals, makeGeneric, compareRecords, equalsRecords } from "../fable-core/Util";
 import List from "../fable-core/List";
 import { isNullOrWhiteSpace } from "../fable-core/String";
 import { forAll, exists } from "../fable-core/Seq";
@@ -102,7 +102,7 @@ setType("ServerCode.Domain.WishList", WishList);
 export const Validation = function (__exports) {
   const verifyBookTitle = __exports.verifyBookTitle = function (title) {
     if (isNullOrWhiteSpace(title)) {
-      return some("No title was entered");
+      return "No title was entered";
     } else {
       return null;
     }
@@ -110,7 +110,7 @@ export const Validation = function (__exports) {
 
   const verifyBookAuthors = __exports.verifyBookAuthors = function (authors) {
     if (isNullOrWhiteSpace(authors)) {
-      return some("No author was entered");
+      return "No author was entered";
     } else {
       return null;
     }
@@ -118,7 +118,7 @@ export const Validation = function (__exports) {
 
   const verifyBookLink = __exports.verifyBookLink = function (link) {
     if (isNullOrWhiteSpace(link)) {
-      return some("No link was entered");
+      return "No link was entered";
     } else {
       return null;
     }
@@ -128,7 +128,7 @@ export const Validation = function (__exports) {
     if (exists(function (b) {
       return equals([b.Authors, b.Title], [book.Authors, book.Title]);
     }, wishList.Books)) {
-      return some("Your wishlist contains this book already.");
+      return "Your wishlist contains this book already.";
     } else {
       return null;
     }

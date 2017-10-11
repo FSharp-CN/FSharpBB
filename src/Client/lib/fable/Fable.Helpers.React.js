@@ -1,7 +1,7 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
 import { equals, Any, Unit, Interface, Function as _Function } from "../fable-core/Util";
-import { createElement } from "react";
+import { createElement as createElement_1 } from "react";
 import { fold } from "../fable-core/Seq";
 export const Props = function (__exports) {
   const Prop = __exports.Prop = class Prop {
@@ -98,7 +98,7 @@ export const Props = function (__exports) {
   setType("Fable.Helpers.React.Props.CSSProp", CSSProp);
   return __exports;
 }({});
-export const createEl = createElement;
+export const createElement = createElement_1;
 export function classBaseList(std, classes) {
   return new Props.HTMLAttr(22, (() => {
     const folder = function (complete, _arg1) {

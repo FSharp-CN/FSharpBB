@@ -13,7 +13,7 @@ export function centerStyle(direction) {
   return ["style", createObj(ofArray([new Props.CSSProp(95, "flex"), new Props.CSSProp(101, direction), new Props.CSSProp(21, "center"), ["justifyContent", "center"], new Props.CSSProp(175, "20px 0")]), 1)];
 }
 export function words(size, message) {
-  return createElement("span", createObj(ofArray([["style", createObj(ofArray([["fontSize", toText(printf("%dpx"))(size)]]), 1)]]), 1), message);
+  return createElement("span", createObj(ofArray([["style", createObj(ofArray([["fontSize", toText(printf("%dpx", 1))(size)]]), 1)]]), 1), message);
 }
 export function buttonLink(cssClass, onClick, elements) {
   return createElement("a", createObj(ofArray([new Props.HTMLAttr(22, cssClass), new Props.DOMAttr(39, function (_arg1) {

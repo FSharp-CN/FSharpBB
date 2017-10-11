@@ -1,10 +1,11 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
-import { comparePrimitives, defaultArg, some, compareRecords, equalsRecords, GenericParam, makeGeneric } from "../fable-core/Util";
+import { comparePrimitives, some, defaultArg, compareRecords, equalsRecords, GenericParam, makeGeneric } from "../fable-core/Util";
 import { collect, map as map_2, ofArray } from "../fable-core/List";
 import List from "../fable-core/List";
 import { create, tryFind } from "../fable-core/Map";
 import _Map from "../fable-core/Map";
+import CurriedLambda from "../fable-core/CurriedLambda";
 import Result from "../fable-core/Result";
 import { tryParse } from "../fable-core/Int32";
 import { split } from "../fable-core/String";
@@ -61,21 +62,23 @@ export const StateModule = function (__exports) {
   return __exports;
 }({});
 export function custom(tipe, stringToSomething) {
-  const inner = function (_arg1) {
-    if (_arg1.unvisited.tail != null) {
-      const matchValue = stringToSomething(_arg1.unvisited.head);
+  return CurriedLambda((() => {
+    const inner = function (_arg1) {
+      if (_arg1.unvisited.tail != null) {
+        const matchValue = stringToSomething(_arg1.unvisited.head);
 
-      if (matchValue.tag === 1) {
-        return new List();
+        if (matchValue.tag === 1) {
+          return new List();
+        } else {
+          return ofArray([StateModule.mkState(new List(_arg1.unvisited.head, _arg1.visited), _arg1.unvisited.tail, _arg1.args, _arg1.value(matchValue.data))]);
+        }
       } else {
-        return ofArray([StateModule.mkState(new List(_arg1.unvisited.head, _arg1.visited), _arg1.unvisited.tail, _arg1.args, _arg1.value(matchValue.data))]);
+        return new List();
       }
-    } else {
-      return new List();
-    }
-  };
+    };
 
-  return inner;
+    return inner;
+  })());
 }
 export function str(state) {
   return custom("string", function (arg0) {
@@ -90,29 +93,33 @@ export function i32(state) {
   }($var1)))(state);
 }
 export function s(str_1) {
-  const inner = function (_arg1) {
-    if (_arg1.unvisited.tail != null) {
-      if (_arg1.unvisited.head === str_1) {
-        return ofArray([StateModule.mkState(new List(_arg1.unvisited.head, _arg1.visited), _arg1.unvisited.tail, _arg1.args, _arg1.value)]);
+  return CurriedLambda((() => {
+    const inner = function (_arg1) {
+      if (_arg1.unvisited.tail != null) {
+        if (_arg1.unvisited.head === str_1) {
+          return ofArray([StateModule.mkState(new List(_arg1.unvisited.head, _arg1.visited), _arg1.unvisited.tail, _arg1.args, _arg1.value)]);
+        } else {
+          return new List();
+        }
       } else {
         return new List();
       }
-    } else {
-      return new List();
-    }
-  };
+    };
 
-  return inner;
+    return inner;
+  })());
 }
 
 function map_1(subValue, parse) {
-  const inner = function (_arg1) {
-    return map_2(function (arg10_) {
-      return StateModule.map(_arg1.value, arg10_);
-    }, parse(new State(_arg1.visited, _arg1.unvisited, _arg1.args, subValue)));
-  };
+  return CurriedLambda((() => {
+    const inner = function (_arg1) {
+      return map_2(function (arg10_) {
+        return StateModule.map(_arg1.value, arg10_);
+      }, parse(new State(_arg1.visited, _arg1.unvisited, _arg1.args, subValue)));
+    };
 
-  return inner;
+    return inner;
+  })());
 }
 
 export { map_1 as map };
@@ -125,23 +132,25 @@ export function top(state) {
   return ofArray([state]);
 }
 export function customParam(key, func) {
-  const inner = function (_arg1) {
-    return ofArray([StateModule.mkState(_arg1.visited, _arg1.unvisited, _arg1.args, _arg1.value(func(tryFind(key, _arg1.args))))]);
-  };
+  return CurriedLambda((() => {
+    const inner = function (_arg1) {
+      return ofArray([StateModule.mkState(_arg1.visited, _arg1.unvisited, _arg1.args, _arg1.value(func(tryFind(key, _arg1.args))))]);
+    };
 
-  return inner;
+    return inner;
+  })());
 }
 export function stringParam(name) {
   return customParam(name, function (x) {
     return x;
   });
 }
-export const intParamHelp = (() => {
+export const intParamHelp = CurriedLambda((() => {
   const binder = function (value) {
     const matchValue = tryParse(value, 10, 0);
 
     if (matchValue[0]) {
-      return some(matchValue[1]);
+      return matchValue[1];
     } else {
       return null;
     }
@@ -150,7 +159,7 @@ export const intParamHelp = (() => {
   return function (option) {
     return defaultArg(option, null, binder);
   };
-})();
+})());
 export function intParam(name) {
   return customParam(name, intParamHelp);
 }

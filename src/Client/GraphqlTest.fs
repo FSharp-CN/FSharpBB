@@ -1,7 +1,6 @@
 module Client.GraphQLTest
 
 open FSharp.Data.GraphQL
-open FSharp.Data.GraphQL.Client
 open System.Collections.Generic
 open Fable.Core
 open Fable.Core.JsInterop
@@ -9,7 +8,7 @@ open Fable.Core.JsInterop
 importAll<unit> "isomorphic-fetch"
 
 type MyClient = GraphQLProvider<"http://localhost:8053/">
-
+printfn "%A" MyClient.Query
 let fetch () =
     printfn "run fetch"
     async {
@@ -36,7 +35,9 @@ let fetch () =
 
 
 let freeQuery = "{ hero(id: \"1000\"){ id, name, appearsIn, friends { name } } }"
+let a = MyClient.Query(freeQuery)
 
+printfn "%A" a
 let (?) (o: obj) (k: string) =
     match o with
     | :? IDictionary<string,obj> as dic -> dic.[k]

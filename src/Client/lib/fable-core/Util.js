@@ -379,6 +379,11 @@ export function toPlainJsObj(source) {
     return source;
   }
 }
+export function jsOptions(mutator) {
+  const opts = {};
+  mutator(opts);
+  return opts;
+}
 export function round(value, digits = 0) {
   const m = Math.pow(10, digits);
   const n = +(digits ? value * m : value).toFixed(8);

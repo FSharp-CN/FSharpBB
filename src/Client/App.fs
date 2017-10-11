@@ -1,4 +1,5 @@
-module Client.App
+namespace Client
+
 
 open Fable.Core
 open Fable.Core.JsInterop
@@ -13,176 +14,176 @@ open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
 
-let hero2 = Client.GraphQLTest.hero2
-printfn "%A" hero2
+[<RequireQualifiedAccess>]
+module App =
+    type SubModel =
+      | NoSubModel
+      | LoginModel of Login.Model
+      | WishListModel of WishList.Model
 
-// Model
-
-type SubModel =
-  | NoSubModel
-  | LoginModel of Login.Model
-  | WishListModel of WishList.Model
-
-type Model =
-  { Page : Page
-    Menu : Menu.Model
-    SubModel : SubModel }
+    type Model =
+      { Page : Page
+        Menu : Menu.Model
+        SubModel : SubModel }
 
 
-/// The URL is turned into a Result.
-let pageParser : Parser<Page->_,_> =
-    oneOf
-        [ map Home (s "home")
-          map Page.Login (s "login")
-          map WishList (s "wishlist") ]
+    /// The URL is turned into a Result.
+    let pageParser : Parser<Page->_,_> =
+        oneOf
+            [ map Home (s "home")
+              map Page.Login (s "login")
+              map WishList (s "wishlist") ]
 
-let urlUpdate (result:Page option) model =
-    match result with
-    | None ->
-        Browser.console.error("Error parsing url")
-        ( model, Navigation.modifyUrl (toHash model.Page) )
-
-    | Some (Page.Login as page) ->
-        let m,cmd = Login.init model.Menu.User
-        { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
-
-    | Some (Page.WishList as page) ->
-        match model.Menu.User with
-        | Some user ->
-            let m,cmd = WishList.init user
-            { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
+    let urlUpdate (result:Page option) model =
+        match result with
         | None ->
-            model, Cmd.ofMsg Logout
+            Browser.console.error("Error parsing url")
+            ( model, Navigation.modifyUrl (toHash model.Page) )
 
-    | Some (Home as page) ->
-        { model with Page = page; Menu = { model.Menu with query = "" } }, []
+        | Some (Page.Login as page) ->
+            let m,cmd = Login.init model.Menu.User
+            { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
 
-let init result =
-    let menu,menuCmd = Menu.init()
-    let m =
-        { Page = Home
-          Menu = menu
-          SubModel = NoSubModel }
+        | Some (Page.WishList as page) ->
+            match model.Menu.User with
+            | Some user ->
+                let m,cmd = WishList.init user
+                { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
+            | None ->
+                model, Cmd.ofMsg Logout
 
-    let m,cmd = urlUpdate result m
-    m,Cmd.batch[cmd; menuCmd]
+        | Some (Home as page) ->
+            { model with Page = page; Menu = { model.Menu with query = "" } }, []
 
-let update msg model =
-    match msg, model.SubModel with
-    | AppMsg.OpenLogIn, _ ->
-        let m,cmd = Login.init None
-        { model with
-            Page = Page.Login
-            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
+    let init result =
+        let menu,menuCmd = Menu.init()
+        let m =
+            { Page = Home
+              Menu = menu
+              SubModel = NoSubModel }
 
-    | StorageFailure e, _ ->
-        printfn "Unable to access local storage: %A" e
-        model, []
+        let m,cmd = urlUpdate result m
+        m,Cmd.batch[cmd; menuCmd]
 
-    | LoginMsg msg, LoginModel m ->
-        let m,cmd = Login.update msg m
-        let cmd = Cmd.map LoginMsg cmd
-        match m.State with
-        | Login.LoginState.LoggedIn token ->
-            let newUser : UserData = { UserName = m.Login.UserName; Token = token }
-            let cmd =
-                if model.Menu.User = Some newUser then cmd else
-                Cmd.batch [cmd
-                           Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
-
+    let update msg model =
+        match msg, model.SubModel with
+        | AppMsg.OpenLogIn, _ ->
+            let m,cmd = Login.init None
             { model with
-                SubModel = LoginModel m
-                Menu = { model.Menu with User = Some newUser }}, cmd
-        | _ ->
+                Page = Page.Login
+                SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
+
+        | StorageFailure e, _ ->
+            printfn "Unable to access local storage: %A" e
+            model, []
+
+        | LoginMsg msg, LoginModel m ->
+            let m,cmd = Login.update msg m
+            let cmd = Cmd.map LoginMsg cmd
+            match m.State with
+            | Login.LoginState.LoggedIn token ->
+                let newUser : UserData = { UserName = m.Login.UserName; Token = token }
+                let cmd =
+                    if model.Menu.User = Some newUser then cmd else
+                    Cmd.batch [cmd
+                               Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
+
+                { model with
+                    SubModel = LoginModel m
+                    Menu = { model.Menu with User = Some newUser }}, cmd
+            | _ ->
+                { model with
+                    SubModel = LoginModel m
+                    Menu = { model.Menu with User = None } }, cmd
+
+        | LoginMsg msg, _ -> model, Cmd.none
+
+        | WishListMsg msg, WishListModel m ->
+            let m,cmd = WishList.update msg m
+            let cmd = Cmd.map WishListMsg cmd
             { model with
-                SubModel = LoginModel m
-                Menu = { model.Menu with User = None } }, cmd
+                SubModel = WishListModel m }, cmd
 
-    | LoginMsg msg, _ -> model, Cmd.none
+        | WishListMsg msg, _ -> model, Cmd.none
 
-    | WishListMsg msg, WishListModel m ->
-        let m,cmd = WishList.update msg m
-        let cmd = Cmd.map WishListMsg cmd
-        { model with
-            SubModel = WishListModel m }, cmd
+        | AppMsg.LoggedIn, _ ->
+            let nextPage = Page.WishList
+            let m,cmd = urlUpdate (Some nextPage) model
+            match m.Menu.User with
+            | Some user ->
+                m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
+            | None ->
+                m, Cmd.ofMsg Logout
 
-    | WishListMsg msg, _ -> model, Cmd.none
+        | AppMsg.LoggedOut, _ ->
+            { model with
+                Page = Page.Home
+                SubModel = NoSubModel
+                Menu = { model.Menu with User = None } },
+            Navigation.newUrl (toHash Page.Home)
 
-    | AppMsg.LoggedIn, _ ->
-        let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Some nextPage) model
-        match m.Menu.User with
-        | Some user ->
-            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
-        | None ->
-            m, Cmd.ofMsg Logout
+        | AppMsg.Logout, _ ->
+            model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
 
-    | AppMsg.LoggedOut, _ ->
-        { model with
-            Page = Page.Home
-            SubModel = NoSubModel
-            Menu = { model.Menu with User = None } },
-        Navigation.newUrl (toHash Page.Home)
+    // VIEW
 
-    | AppMsg.Logout, _ ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+    open Fable.Helpers.React
+    open Fable.Helpers.React.Props
+    open Client.Style
 
-// VIEW
+    /// Constructs the view for a page given the model and dispatcher.
+    let viewPage model dispatch =
+        match model.Page with
+        | Page.Home ->
+            [ viewLink Login "Please login into the SAFE-Stack sample app"
+              br []
+              br []
+              br []
+              br []
+              br []
+              br []
+              br []
+              words 20 "Made with"
+              a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/Images/safe_logo.png" ] ]
+              words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming."
+              br []
+              br []
+              br []
+              br []
+              words 20 ("version " + ReleaseNotes.Version) ]
 
-open Fable.Helpers.React
-open Fable.Helpers.React.Props
-open Client.Style
+        | Page.Login ->
+            match model.SubModel with
+            | LoginModel m ->
+                [ div [ ] [ Login.view m dispatch ]]
+            | _ -> [ ]
 
-/// Constructs the view for a page given the model and dispatcher.
-let viewPage model dispatch =
-    match model.Page with
-    | Page.Home ->
-        [ viewLink Login "Please login into the SAFE-Stack sample app"
-          br []
-          br []
-          br []
-          br []
-          br []
-          br []
-          br []
-          words 20 "Made with"
-          a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/Images/safe_logo.png" ] ]
-          words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming."
-          br []
-          br []
-          br []
-          br []
-          words 20 ("version " + ReleaseNotes.Version) ]
+        | Page.WishList ->
+            match model.SubModel with
+            | WishListModel m ->
+                [ div [ ] [ lazyView2 WishList.view m dispatch ]]
+            | _ -> [ ]
 
-    | Page.Login ->
-        match model.SubModel with
-        | LoginModel m ->
-            [ div [ ] [ Login.view m dispatch ]]
-        | _ -> [ ]
+    /// Constructs the view for the application given the model.
+    let view model dispatch =
+      div []
+        [ lazyView2 Menu.view model.Menu dispatch
+          hr []
+          div [ centerStyle "column" ] (viewPage model dispatch)
+        ]
 
-    | Page.WishList ->
-        match model.SubModel with
-        | WishListModel m ->
-            [ div [ ] [ lazyView2 WishList.view m dispatch ]]
-        | _ -> [ ]
+    open Elmish.React
+    open Elmish.Debug
 
-/// Constructs the view for the application given the model.
-let view model dispatch =
-  div []
-    [ lazyView2 Menu.view model.Menu dispatch
-      hr []
-      div [ centerStyle "column" ] (viewPage model dispatch)
-    ]
+    printfn "Result:%A" Validation.Core.result
+    let main () =
+        // App
+        Program.mkProgram init update view
+        |> Program.toNavigable (parseHash pageParser) urlUpdate
+        |> Program.withConsoleTrace
+        |> Program.withReact "elmish-app"
+        #if DEBUG
+        |> Program.withDebugger
+        #endif
+        |> Program.run
 
-open Elmish.React
-open Elmish.Debug
-
-// App
-Program.mkProgram init update view
-|> Program.toNavigable (parseHash pageParser) urlUpdate
-|> Program.withConsoleTrace
-|> Program.withReact "elmish-app"
-#if DEBUG
-|> Program.withDebugger
-#endif
-|> Program.run

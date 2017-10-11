@@ -69,9 +69,9 @@ export function authUser(login, apiUrl) {
   return function (builder_) {
     return builder_.Delay(function () {
       if (isNullOrEmpty(login.UserName)) {
-        return toFail(printf("You need to fill in a username."));
+        return toFail(printf("You need to fill in a username.", 0));
       } else if (isNullOrEmpty(login.Password)) {
-        return toFail(printf("You need to fill in a password."));
+        return toFail(printf("You need to fill in a password.", 0));
       } else {
         const body = toJson(login);
         const props = ofArray([new Fetch_types.RequestProperties(0, "POST"), new Fetch_types.RequestProperties(1, {
@@ -79,12 +79,12 @@ export function authUser(login, apiUrl) {
         }), new Fetch_types.RequestProperties(2, body)]);
         return builder_.Delay(function () {
           return _fetch(apiUrl, props).then(function (_arg1) {
-            return !_arg1.ok ? toFail(printf("Error: %d"))(_arg1.status) : _arg1.text().then(function (_arg2) {
+            return !_arg1.ok ? toFail(printf("Error: %d", 1))(_arg1.status) : _arg1.text().then(function (_arg2) {
               return Promise.resolve(_arg2);
             });
           });
         }).catch(function (_arg3) {
-          return toFail(printf("Could not authenticate user."));
+          return toFail(printf("Could not authenticate user.", 0));
         });
       }
     });
@@ -203,6 +203,6 @@ export function view(model, dispatch) {
       id: "greeting"
     }, createElement("h3", {
       className: "text-center"
-    }, toText(printf("Hi %s!"))(model.Login.UserName)));
+    }, toText(printf("Hi %s!", 1))(model.Login.UserName)));
   }
 }

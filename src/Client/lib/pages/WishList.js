@@ -1,7 +1,7 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
 import { Validation, Book, WishList } from "../Shared/Domain";
-import { createObj, toString, equals, some, compare, compareRecords, equalsRecords, Option } from "../fable-core/Util";
+import { createObj, toString, equals, compare, compareRecords, equalsRecords, Option } from "../fable-core/Util";
 import { filter, ofArray } from "../fable-core/List";
 import List from "../fable-core/List";
 import { fetchAs, Fetch_types } from "../src/Fetch";
@@ -167,7 +167,7 @@ export function update(msg, model) {
           })(), postWishListCmd(model.Token, wishList_2)];
         } else {
           return [(() => {
-            const ErrorMsg_5 = some(matchValue);
+            const ErrorMsg_5 = matchValue;
             return new Model(model.WishList, model.Token, model.NewBook, model.NewBookId, model.TitleErrorText, model.AuthorsErrorText, model.LinkErrorText, ErrorMsg_5);
           })(), Cmd.none()];
         }
@@ -183,7 +183,7 @@ export function update(msg, model) {
 
     case 7:
       return [(() => {
-        const ErrorMsg_7 = some(msg.data.message);
+        const ErrorMsg_7 = msg.data.message;
         return new Model(model.WishList, model.Token, model.NewBook, model.NewBookId, model.TitleErrorText, model.AuthorsErrorText, model.LinkErrorText, ErrorMsg_7);
       })(), Cmd.none()];
 
@@ -317,7 +317,7 @@ export function newBookForm(model, dispatch) {
   })))))));
 }
 export function view(model, dispatch) {
-  return createElement("div", {}, createElement("h4", {}, toText(printf("Wishlist for %s"))(model.WishList.UserName)), createElement("table", {
+  return createElement("div", {}, createElement("h4", {}, toText(printf("Wishlist for %s", 1))(model.WishList.UserName)), createElement("table", {
     className: "table table-striped table-hover"
   }, createElement("thead", {}, createElement("tr", {}, createElement("th", {}, "Title"), createElement("th", {}, "Authors"))), createElement("tbody", {}, ...toList(delay(function () {
     return map(function (book) {

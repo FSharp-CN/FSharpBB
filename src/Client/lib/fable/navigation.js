@@ -1,6 +1,6 @@
 import { setType } from "../fable-core/Symbol";
 import _Symbol from "../fable-core/Symbol";
-import { some, equals, GenericParam, Interface } from "../fable-core/Util";
+import { equals, GenericParam, Interface } from "../fable-core/Util";
 import { ofArray } from "../fable-core/List";
 import { Cmd } from "./cmd";
 import { Program } from "./program";
@@ -29,13 +29,13 @@ export const Navigation = function (__exports) {
 
   const modifyUrl = __exports.modifyUrl = function (newUrl) {
     return ofArray([function (_arg1) {
-      history.replaceState(null, some(""), some(newUrl));
+      history.replaceState(null, "", newUrl);
     }]);
   };
 
   const newUrl = __exports.newUrl = function (newUrl_1) {
     return ofArray([function (_arg1) {
-      history.pushState(null, some(""), some(newUrl_1));
+      history.pushState(null, "", newUrl_1);
       const ev = document.createEvent("CustomEvent");
       ev.initCustomEvent("NavigatedEvent", true, true, {});
       window.dispatchEvent(ev);
@@ -44,7 +44,7 @@ export const Navigation = function (__exports) {
 
   const jump = __exports.jump = function (n) {
     return ofArray([function (_arg1) {
-      history.go(some(n));
+      history.go(n);
     }]);
   };
 
@@ -77,7 +77,7 @@ export const ProgramModule = function (__exports) {
               break;
 
             case 1:
-              lastLocation = some(window.location.href);
+              lastLocation = window.location.href;
               dispatch(new Navigable(0, window.location));
               break;
           }

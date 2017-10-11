@@ -1,9 +1,4 @@
-import { second } from "./Date";
-import { minute } from "./Date";
-import { hour } from "./Date";
-import { day } from "./Date";
-import { month } from "./Date";
-import { year } from "./Date";
+import { day, hour, minute, month, second, year } from "./Date";
 import { escape } from "./RegExp";
 import { toString } from "./Util";
 const fsFormatRegExp = /(^|[^%])%([0+ ]*)(-?\d+)?(?:\.(\d+))?(\w)/;
@@ -99,10 +94,10 @@ export function indexOfAny(str, anyOf, ...args) {
 function toHex(value) {
   return value < 0 ? "ff" + (16777215 - (Math.abs(value) - 1)).toString(16) : value.toString(16);
 }
-export function printf(input, ...args) {
+export function printf(input, argsLength) {
   return {
     input,
-    cont: fsFormat(input, ...args)
+    cont: fsFormat(input, argsLength)
   };
 }
 export function toConsole(arg) {
@@ -118,7 +113,7 @@ export function toFail(arg) {
     throw new Error(x);
   });
 }
-export function fsFormat(str, ...args) {
+export function fsFormat(str, argsLength) {
   function formatOnce(str2, rep) {
     return str2.replace(fsFormatRegExp, (_, prefix, flags, pad, precision, format) => {
       switch (format) {
@@ -157,26 +152,22 @@ export function fsFormat(str, ...args) {
       return once.replace(/%/g, "%%");
     });
   }
-  if (args.length === 0) {
-    return cont => {
-      if (fsFormatRegExp.test(str)) {
-        return (...args2) => {
-          let strCopy = str;
-          for (const arg of args2) {
-            strCopy = formatOnce(strCopy, arg);
-          }
-          return cont(strCopy.replace(/%%/g, "%"));
-        };
-      } else {
-        return cont(str);
-      }
-    };
-  } else {
-    for (const arg of args) {
-      str = formatOnce(str, arg);
+  return cont => {
+    if (argsLength > 0) {
+      const printer = (...args2) => {
+        let strCopy = str;
+        for (const arg of args2) {
+          strCopy = formatOnce(strCopy, arg);
+        }
+        return cont(strCopy.replace(/%%/g, "%"));
+      };
+      // Attach the arguments length for partial applications
+      printer.argsLength = argsLength;
+      return printer;
+    } else {
+      return cont(str);
     }
-    return str.replace(/%%/g, "%");
-  }
+  };
 }
 export function format(str, ...args) {
   return str.replace(formatRegExp, (match, idx, pad, pattern) => {
@@ -407,15 +398,18 @@ export function arrayToGuid(buf) {
   return _byteToHex[buf[3]] + _byteToHex[buf[2]] + _byteToHex[buf[1]] + _byteToHex[buf[0]] + "-" + _byteToHex[buf[5]] + _byteToHex[buf[4]] + "-" + _byteToHex[buf[7]] + _byteToHex[buf[6]] + "-" + _byteToHex[buf[8]] + _byteToHex[buf[9]] + "-" + _byteToHex[buf[10]] + _byteToHex[buf[11]] + _byteToHex[buf[12]] + _byteToHex[buf[13]] + _byteToHex[buf[14]] + _byteToHex[buf[15]];
 }
 /* tslint:enable */
+function notSupported(name) {
+  throw new Error("The environment doesn't support '" + name + "', please use a polyfill.");
+}
 export function toBase64String(inArray) {
   let str = "";
   for (let i = 0; i < inArray.length; i++) {
     str += String.fromCharCode(inArray[i]);
   }
-  return typeof btoa === "function" ? btoa(str) : new Buffer(str).toString("base64");
+  return typeof btoa === "function" ? btoa(str) : notSupported("btoa");
 }
 export function fromBase64String(b64Encoded) {
-  const binary = typeof atob === "function" ? atob(b64Encoded) : new Buffer(b64Encoded, "base64").toString();
+  const binary = typeof atob === "function" ? atob(b64Encoded) : notSupported("atob");
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
