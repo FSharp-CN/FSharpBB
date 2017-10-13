@@ -12,7 +12,7 @@
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
-    <Compile Include="Config/Config.fs" />
+    <!-- <Compile Include="Config/Config.fs" /> -->
     <Compile Include="WishList.fs" />
     <Compile Include="Api/Route.fs" />
     <Compile Include="WebServer.fs" />

@@ -18,16 +18,16 @@ let start clientPath port =
     let logger = Logging.Targets.create Logging.Info [| "Suave" |]
     let serverConfig =
         { defaultConfig with
-            logger = Targets.create LogLevel.Debug [|"ServerCode"; "Server" |]
+            autoGrow = true
+            logger = Targets.create LogLevel.Fatal [|"ServerCode"; "Server" |]
             homeFolder = Some clientPath
             bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
-
-
 
     let app =
         choose [
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
+                path "/test" >=> Successful.OK "Hello world!"
                 pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
 
                 path "/api/wishlist/" >=> WishList.getWishList
@@ -40,9 +40,8 @@ let start clientPath port =
 
             NOT_FOUND "Page not found."
 
-        ] >=> logWithLevelStructured Logging.Info logger logFormatStructured
+        ] // >=> logWithLevelStructured Logging.Info logger logFormatStructured
 
-    async {
-        return startWebServer serverConfig app
-    } |> ignore
-    Route.start ()
+    // Route.start ()
+    startWebServer serverConfig (Successful.OK "Hello World!")
+

@@ -22,7 +22,7 @@
 	"node_modules":false,
 	"src/Client/public/":false,
 	"src/**/bin":false,
-	"src/**/obj":true,
+	"src/**/obj":false,
 	"src/Client/out":true
 	}
 }

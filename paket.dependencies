@@ -11,6 +11,7 @@ nuget Nett.Coma
 nuget Pomelo.EntityFrameworkCore.MySql
 nuget Suave
 nuget Microsoft.Extensions.Logging.Console
+nuget Suave.AspNetCore
 nuget System.Net.NetworkInformation
 nuget Newtonsoft.Json
 nuget jose-jwt
@@ -19,6 +20,7 @@ nuget Fable.Core
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.React
+nuget NETStandard.Library 2.0.1
 
 clitool dotnet-fable
 clitool Microsoft.DotNet.Watcher.Tools
@@ -28,6 +30,7 @@ group ServerTests
   storage:none
   nuget FSharp.Core redirects: force
   nuget Expecto
+  nuget NETStandard.Library 2.0.1
 
 group UITests
   source https://nuget.org/api/v2

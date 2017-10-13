@@ -197,4 +197,6 @@ let setCorsHeaders =
     >=> Writers.setHeader "Access-Control-Allow-Headers" "content-type"
 
 let start () =
-    startWebServer {defaultConfig with bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") 8053us]} (setCorsHeaders >=> graphiql >=> Writers.setMimeType "application/json")
+    async {
+        startWebServer {defaultConfig with bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") 8053us]} (setCorsHeaders >=> graphiql >=> Writers.setMimeType "application/json")
+    }

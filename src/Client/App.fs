@@ -175,7 +175,7 @@ module App =
     open Elmish.React
     open Elmish.Debug
 
-    printfn "Result:%A" Validation.Core.result
+    printfn "Result:%A" Fable.Validation.Core.result
     let main () =
         // App
         Program.mkProgram init update view

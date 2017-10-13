@@ -151,8 +151,8 @@ let internal baseValidateSync<'T, 'TError, 'L when 'L : comparison>
 let inline all<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> false
 let inline race<'T, 'TError, 'L when 'L : comparison> = baseValidateSync<'T, 'TError, 'L> true
 
-let inline allSync = all
-let inline raceSync = race
+let inline allSync<'T, 'TError, 'L when 'L : comparison> = all
+let inline raceSync<'T, 'TError, 'L when 'L : comparison> = race
 
 let inline test input = Input ({race=true;skip=false}, input)
 let inline testAll input = Input ({race=false;skip=false}, input)
@@ -248,7 +248,6 @@ type People2 = {
     name: string
     age: int
 }
-JS.Object.assign
 JS.console.time "sync"
 let internal result =
     all (fun t ->
