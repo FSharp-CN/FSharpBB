@@ -2,10 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup>
-    <FscToolPath>/Library/Frameworks/Mono.framework/Versions/Current/Commands</FscToolPath>
-    <FscToolExe>fsharpc</FscToolExe>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="ReleaseNotes.fs" />
     <Compile Include="../Server/Shared/Domain.fs" />
